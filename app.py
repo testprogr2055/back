@@ -4,8 +4,9 @@ import hashlib
 from flask_cors import CORS
 import os
 
+# Inicializa Flask
 app = Flask(__name__, static_folder='front')
-CORS(app)  # só se precisar do frontend externo
+CORS(app)  # apenas se precisar do frontend externo, mas não obrigatório neste caso
 
 # ----------------- CONFIGURAÇÃO -----------------
 KEYS = [
@@ -26,10 +27,12 @@ DEBUG_MODE = False
 # ----------------- ROTAS DO FRONTEND -----------------
 @app.route('/')
 def index():
+    # Serve o HTML principal
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:filename>')
 def static_files(filename):
+    # Serve JS, CSS e outros arquivos estáticos
     return send_from_directory(app.static_folder, filename)
 
 # ----------------- ROTAS DA API -----------------
