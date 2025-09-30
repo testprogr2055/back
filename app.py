@@ -1,21 +1,9 @@
-#!/usr/bin/env python3
-"""
-Flask single-file app: Key Concatenation Verifier (versão oculta corrigida)
-
-Como usar:
-1) pip install flask
-2) python flask_key_checker.py
-3) Abrir http://127.0.0.1:5000
-
-Observações:
-- Configure as KEYS abaixo conforme necessário.
-- DEBUG_MODE controla se a rota /api/debug_example ficará ativa.
-"""
-
 from flask import Flask, request, jsonify, render_template_string
+from flask_cors import CORS
 import hashlib
 
 app = Flask(__name__)
+CORS(app)  # Habilita CORS globalmente para produção
 
 # ----------------- CONFIGURAÇÃO -----------------
 KEYS = [
@@ -30,11 +18,8 @@ KEYS = [
 ]
 EXPECTED = "".join(KEYS)
 EXPECTED_MD5 = hashlib.md5(EXPECTED.encode("utf-8")).hexdigest()
-
-# Ative apenas em ambiente de desenvolvimento local
 DEBUG_MODE = False
 # -------------------------------------------------
-
 PAGE = """
 <!doctype html>
 <html lang="pt-BR">
