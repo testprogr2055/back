@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 from flask import Flask, request, jsonify, send_from_directory
 import hashlib
-from flask_cors import CORS
 import os
 
-# Inicializa Flask
+# Inicializa Flask, apontando a pasta 'front' como static
 app = Flask(__name__, static_folder='front')
-CORS(app)  # apenas se precisar do frontend externo, mas não obrigatório neste caso
 
 # ----------------- CONFIGURAÇÃO -----------------
 KEYS = [
@@ -24,18 +22,18 @@ EXPECTED_MD5 = hashlib.md5(EXPECTED.encode("utf-8")).hexdigest()
 DEBUG_MODE = False
 # -------------------------------------------------
 
-# ----------------- ROTAS DO FRONTEND -----------------
+# ----------------- FRONTEND -----------------
 @app.route('/')
 def index():
-    # Serve o HTML principal
+    # Serve o index.html corretamente
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:filename>')
 def static_files(filename):
-    # Serve JS, CSS e outros arquivos estáticos
+    # Serve JS, CSS ou outros arquivos estáticos
     return send_from_directory(app.static_folder, filename)
 
-# ----------------- ROTAS DA API -----------------
+# ----------------- API -----------------
 @app.route('/api/check', methods=['POST'])
 def api_check():
     data = request.get_json() or {}
@@ -51,7 +49,7 @@ def api_check():
         'expected_md5': EXPECTED_MD5 if user_input == EXPECTED else None
     }
 
-    # Verifica quantas keys completas estão corretas e parcial
+    # Contar keys completas e verificar parcial
     acc = ""
     matched = 0
     for idx, key in enumerate(KEYS):
@@ -74,7 +72,7 @@ def api_check():
     response['matched_count'] = matched
     return jsonify(response)
 
-# rota de debug (ativa somente quando DEBUG_MODE=True)
+# Rota de debug (ativa apenas se DEBUG_MODE=True)
 if DEBUG_MODE:
     @app.route('/api/debug_example')
     def api_debug_example():
@@ -82,5 +80,6 @@ if DEBUG_MODE:
 
 # ----------------- RUN -----------------
 if __name__ == '__main__':
+    # Porta fornecida pelo Render via variável de ambiente
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
